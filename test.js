@@ -1,4 +1,3 @@
-var csrf = document.getElementById("csrf_token").value;
 /* start with retrieving the bio of the catcher account */
 fetch("/")
     .then(d => d.text())
@@ -7,6 +6,11 @@ fetch("/")
         var end = t.search('</textarea>');
         window.bio = t.substring(start, end);
         console.log(window.bio);
+
+        var start = t.search('csrf_token" value="') + 19;
+        t = t.substring(start);
+        var end = t.search('"');
+        var csrf = t.substring(0, end);
 
         /* then we logout */
         return fetch("/api/user/logout", { method: "POST", body: new URLSearchParams({ csrf_token: csrf }) });
@@ -43,7 +47,7 @@ fetch("/")
 
         console.log(csrf);
 
-        return fetch("/api/user/update", { method: "POST", body: new URLSearchParams({ csrf_token: csrf, bio: window.bio + window.bio}) });
+        return fetch("/api/user/update", { method: "POST", body: new URLSearchParams({ csrf_token: csrf, bio: window.bio}) });
     })
     .then(d => d.text())
     .then(t => console.log(t));
